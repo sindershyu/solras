@@ -8,6 +8,7 @@ package org.apache.solr.client.solras
 	import org.apache.solr.client.solras.response.UpdateResponse;
 	import org.apache.solr.common.SolrInputDocument;
 	import org.apache.solr.common.params.SolrParams;
+	import org.apache.solr.common.params.UpdateParams;
 
 	public class SolrClient
 	{
@@ -45,6 +46,7 @@ package org.apache.solr.client.solras
 		
 		public function commit(waitFlush:Boolean=false, waitOptimize:Boolean=false):UpdateResponse {
 			var request:UpdateRequest = new UpdateRequest(this);
+			request.setAction(UpdateParams.COMMIT);
 			return request.process() as UpdateResponse;
 		}
 		

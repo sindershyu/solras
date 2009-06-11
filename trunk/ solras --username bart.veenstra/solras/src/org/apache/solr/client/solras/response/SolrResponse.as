@@ -5,18 +5,22 @@ package org.apache.solr.client.solras.response
 
 	public class SolrResponse
 	{
-//		public abstract long getElapsedTime();
-//  public abstract void setResponse(  NamedList<Object> rsp );
-//  public abstract NamedList<Object> getResponse();
-
+		public var elapsedTime:Number;
+  		
 		public var token:AsyncToken;
+		
+		[Bindable]public var response:Object;
 		
 		public function SolrResponse()
 		{
 		}
 		
+		public function resultHandler(result:ResultEvent):void
+		{
+			response = result.result;
+			trace(result);
+			throw new Error("Not implemnted. Abstract base class");
+		}
 		
-		
-		 
 	}
 }

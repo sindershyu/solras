@@ -4,11 +4,16 @@ package org.apache.solr.common.params
 
 	public class SolrParams implements ISolrParams
 	{
-		private var params:Dictionary = new Dictionary();
+		public var params:Dictionary = new Dictionary();
 		
 		public function getParam(param:String):String 
 		{
 			return params[param] as String;
+		}
+		
+		public function setParam(param:String, value:Object):void
+		{ 
+			params[param] = value;	
 		}
 		
 		public function getBool(param:String):Boolean 
