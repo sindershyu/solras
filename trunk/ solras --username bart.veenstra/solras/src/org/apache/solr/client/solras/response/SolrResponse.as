@@ -1,25 +1,26 @@
 package org.apache.solr.client.solras.response
 {
-	import mx.rpc.AsyncToken;
+	import flash.utils.getTimer;
+	import flash.xml.XMLNode;
+	
 	import mx.rpc.events.ResultEvent;
 
 	public class SolrResponse
 	{
 		public var elapsedTime:Number;
   		
-		public var token:AsyncToken;
-		
-		[Bindable]public var response:Object;
+		[Bindable]public var result:XMLNode;
 		
 		public function SolrResponse()
 		{
 		}
 		
-		public function resultHandler(result:ResultEvent):void
+		public function resultHandler(resultEvent:ResultEvent):void
 		{
-			response = result.result;
-			trace(result);
-			throw new Error("Not implemnted. Abstract base class");
+			result = resultEvent.result as XMLNode;
+			var diff:int = getTimer() - elapsedTime;
+			elapsedTime = diff;
+			trace(result + diff);
 		}
 		
 	}

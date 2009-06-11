@@ -89,7 +89,7 @@ package org.apache.solr.client.solras.request
 		
 		override public function process():SolrResponse
 		{
-			var body:Object = new Object;
+			var body:Object = "";
 			if(documentsToBeAdded!=null && documentsToBeAdded.length > 0)
 			{
 				var add:XML = <add></add>;
