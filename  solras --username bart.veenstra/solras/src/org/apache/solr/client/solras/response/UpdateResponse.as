@@ -9,9 +9,11 @@ package org.apache.solr.client.solras.response
 		{
 		}
 		
-		public function resultHandler(result:ResultEvent):void
+		override public function resultHandler(result:ResultEvent):void
 		{
 			trace(result);
+			super.resultHandler(result);
+			
 		}
 	}
 }

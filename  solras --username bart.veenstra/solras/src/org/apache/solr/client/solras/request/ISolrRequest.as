@@ -6,7 +6,7 @@ package org.apache.solr.client.solras.request
 
 	public interface ISolrRequest
 	{
-		function getParams():Object;
+		function getParams():SolrParams;
 		function process():SolrResponse
 		
 	}
