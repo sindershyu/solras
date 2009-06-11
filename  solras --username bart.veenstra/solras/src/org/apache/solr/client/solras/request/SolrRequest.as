@@ -1,5 +1,8 @@
 package org.apache.solr.client.solras.request
 {
+	import flash.utils.getTimer;
+	
+	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.HTTPService;
 	import mx.rpc.http.Operation;
@@ -38,11 +41,19 @@ package org.apache.solr.client.solras.request
 		
 		protected function send(response:SolrResponse, body:Object):SolrResponse 
 		{
+			response.elapsedTime = getTimer();
+			operation.resultFormat = HTTPService.RESULT_FORMAT_XML;
 			operation.addEventListener(ResultEvent.RESULT, response.resultHandler);
+			operation.addEventListener(FaultEvent.FAULT, traceFaultHandler);
 			operation.contentType = HTTPService.CONTENT_TYPE_XML;
 			operation.url += assembleParameters();
 			operation.send(body);
 			return response;	
+		}
+		
+		private function traceFaultHandler(e:FaultEvent):void 
+		{
+			trace(e);
 		}
 		
 		private function assembleParameters():String

@@ -11,8 +11,9 @@ package org.apache.solr.client.solras.response
 		
 		override public function resultHandler(result:ResultEvent):void
 		{
-			trace(result);
 			super.resultHandler(result);
+			
+			
 			
 		}
 	}
