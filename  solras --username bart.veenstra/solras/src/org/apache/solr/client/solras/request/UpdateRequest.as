@@ -2,6 +2,7 @@ package org.apache.solr.client.solras.request
 {
 	import mx.rpc.AsyncToken;
 	import mx.rpc.events.ResultEvent;
+	import mx.rpc.http.HTTPService;
 	
 	import org.apache.solr.client.solras.SolrClient;
 	import org.apache.solr.client.solras.response.SolrResponse;
@@ -16,26 +17,53 @@ package org.apache.solr.client.solras.request
 		private var toBeDeletedById:Array; //of String;
 		private var toBeDeletedByQuery:Array; // of String
 		
+		/** wait till the command has flushed */
+		public static const WAIT_FLUSH:String 				= "waitFlush";
+		  
+		/** wait for the search to warm up */
+		public static const WAIT_SEARCHER:String 			= "waitSearcher";
+		  
+		/** overwrite indexing fields */
+		public static const OVERWRITE:String 				= "overwrite";
+		  
+		/** Commit everything after the command completes */
+		public static const COMMIT:String 					= "commit";
+		  
+		/** Commit everything after the command completes */
+		public static const OPTIMIZE:String 				= "optimize";
+		
+		/** Select the update processor to use.  A RequestHandler may or may not respect this parameter */
+		public static const UPDATE_PROCESSOR:String 		= "update.processor";
+		/**
+		 * If optimizing, set the maximum number of segments left in the index after optimization.  1 is the default (and is equivalent to calling IndexWriter.optimize() in Lucene).
+		 */
+		public static const MAX_OPTIMIZE_SEGMENTS:String 	= "maxSegments";
+   
+		
 		private var token:AsyncToken;
 		
 		private var solrParameters:SolrParams;
 		
-		public function UpdateRequest()
+		public function UpdateRequest(solrClient:SolrClient)
 		{
-			super(POST, "/update");
+			super(solrClient, POST, "/update");
 		}
 		
 		
 		override public function getParams():Object
 		{
-			var p:Object = new Object();
-			p.add = new Object();
-			p.add.doc = new Array();
 			
-			 
-			return p;
+			var add:XML = <add></add>;
+			for each (var doc:SolrInputDocument in documentsToBeAdded)
+			{
+				add.appendChild(doc.getXML());	
+			}
+			return add;
 		}
-		 
+		
+		
+		
+		
 		public function clear():void
 		{
 			documentsToBeAdded = null;
@@ -47,7 +75,7 @@ package org.apache.solr.client.solras.request
 		{ 
 			if(documentsToBeAdded == null)
 				documentsToBeAdded = new Array();
-			documentsToBeAdded.push(documentsToBeAdded);
+			documentsToBeAdded.push(documentToBeAdded);
 			return this;	
 		}
 		
@@ -73,12 +101,12 @@ package org.apache.solr.client.solras.request
 			return this;	
 		}
 		
-		override public function process(solrClient:SolrClient):SolrResponse
+		override public function process():SolrResponse
 		{
-			var response:UpdateResponse = new UpdateResponse();			
-			solrClient.solrService.method = super.method;
-			solrClient.setPath(super.path);
-			response.token = solrClient.solrService.send(getParams());
+			var response:UpdateResponse = new UpdateResponse();
+			operation.addEventListener(ResultEvent.RESULT, response.resultHandler);
+			operation.contentType = HTTPService.CONTENT_TYPE_XML;
+			response.token = operation.send(getParams);		
 			return response;
 		}
 	}

@@ -1,7 +1,7 @@
 package org.apache.solr.client.solras
 {
 	import mx.rpc.events.FaultEvent;
-	import mx.rpc.http.HTTPService;
+	import mx.rpc.http.HTTPMultiService;
 	
 	import org.apache.solr.client.solras.request.UpdateRequest;
 	import org.apache.solr.client.solras.response.QueryResponse;
@@ -13,14 +13,16 @@ package org.apache.solr.client.solras
 	{
 		public static var DATE_FORMAT_UTC:String = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 		
-		public var solrService:HTTPService;
+		public var solrService:HTTPMultiService;
 		private var rootUrl:String;
 		
-		public function SolrClient(rootUrl:String=null,destination:String=null)
+		public function SolrClient(rootUrl:String=null,destination:String=null, useProxy:Boolean=false)
 		{
 			this.rootUrl = rootUrl;
-			solrService = new HTTPService();
-			solrService.url = rootUrl;
+			solrService = new HTTPMultiService();
+			solrService.baseURL = rootUrl;
+						
+			solrService.useProxy = useProxy	;
 			solrService.addEventListener(FaultEvent.FAULT,traceFaultHandler);
 		}
 		
@@ -29,25 +31,21 @@ package org.apache.solr.client.solras
 			trace(e);
 		}
 		
-		public function setPath(path:String):void
-		{
-			solrService.url = rootUrl + path;
-		}
-		
 		public function add(doc:SolrInputDocument):UpdateResponse {
-			var request:UpdateRequest = new UpdateRequest();
+			var request:UpdateRequest = new UpdateRequest(this);
 			request.add(doc);
-			return request.process(this) as UpdateResponse;
+			return request.process() as UpdateResponse;
 		}
 		
 		public function addCollection(docs:Array):UpdateResponse {
-			var request:UpdateRequest = new UpdateRequest();
+			var request:UpdateRequest = new UpdateRequest(this);
 			request.addCollection(docs);
-			return request.process(this) as UpdateResponse;
+			return request.process() as UpdateResponse;
 		}
 		
-		public function commit():UpdateResponse {
-			return null;
+		public function commit(waitFlush:Boolean=false, waitOptimize:Boolean=false):UpdateResponse {
+			var request:UpdateRequest = new UpdateRequest(this);
+			return request.process() as UpdateResponse;
 		}
 		
 		public function optimize():UpdateResponse {

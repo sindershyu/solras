@@ -1,8 +1,10 @@
 package org.apache.solr.client.solras.request
 {
+	import mx.rpc.http.HTTPService;
+	import mx.rpc.http.Operation;
+	
 	import org.apache.solr.client.solras.SolrClient;
 	import org.apache.solr.client.solras.response.SolrResponse;
-	import org.apache.solr.common.params.SolrParams;
 	
 	
 
@@ -13,21 +15,21 @@ package org.apache.solr.client.solras.request
 		
 		protected var method:String;
 		protected var path: String;
+		protected var operation:Operation;
 		
-		public function SolrRequest(httpMethod:String, path:String)
+		public function SolrRequest(client:SolrClient, httpMethod:String, path:String)
 		{
-			this.method = httpMethod;
-			this.path = path;
+			operation = new Operation(client.solrService,"update");
+			operation.method = httpMethod;
+			operation.url = client.solrService.baseURL + path;
+//			operation.resultFormat = HTTPService.RESULT_FORMAT_XML;
 		}
 		
 		public function getParams():Object {
 			throw new Error("Not implemented");
 		}
-		public function process(solrClient:SolrClient):SolrResponse {
+		public function process():SolrResponse {
 			throw new Error("Not implemented");
 		}
-		
-		
-		
 	}
 }
