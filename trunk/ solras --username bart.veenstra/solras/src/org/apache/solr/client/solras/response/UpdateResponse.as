@@ -12,8 +12,6 @@ package org.apache.solr.client.solras.response
 		public function resultHandler(result:ResultEvent):void
 		{
 			trace(result);
-			if(token != result.token)
-				return;
 		}
 	}
 }
