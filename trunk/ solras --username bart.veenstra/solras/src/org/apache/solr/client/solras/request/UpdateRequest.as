@@ -99,6 +99,25 @@ package org.apache.solr.client.solras.request
 				}
 				body = add;
 			}
+			if(toBeDeletedById != null)
+			{
+				var deleteByID:XML = <delete></delete>;
+				for each (var id:String in toBeDeletedById)
+				{
+					deleteByID.appendChild(<id>{id}</id>);
+				}
+				body = deleteByID;
+			}
+			if(toBeDeletedByQuery != null)
+			{
+				var deleteByQuery:XML = <delete></delete>;
+				for each (var query:String in toBeDeletedByQuery)
+				{
+					deleteByQuery.appendChild(<query>{id}</query>);
+				}
+				body = deleteByQuery;
+			}
+			
 			return super.send(new UpdateResponse(),body);
 		}
 	}
