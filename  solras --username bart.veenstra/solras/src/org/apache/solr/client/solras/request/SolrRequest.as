@@ -20,17 +20,22 @@ package org.apache.solr.client.solras.request
 		
 		protected var method:String;
 		protected var path: String;
+		protected var baseUrl:String;
 		protected var operation:Operation;
+		public var solrParameters:SolrParams;
 		
-		public function SolrRequest(client:SolrClient, httpMethod:String, path:String)
+		
+		public function getParams():SolrParams
 		{
-			operation = new Operation(client.solrService,"update");
-			operation.method = httpMethod;
-			operation.url = client.solrService.baseURL + path;
+			return solrParameters;
 		}
 		
-		public function getParams():SolrParams {
-			throw new Error("Not implemented");
+		public function SolrRequest(client:SolrClient, httpMethod:String, path:String=null)
+		{
+			this.path = path;
+			this.baseUrl = client.solrService.baseURL;
+			operation = new Operation(client.solrService,"update");
+			operation.method = httpMethod;
 		}
 		
 		public function process():SolrResponse 
@@ -38,23 +43,24 @@ package org.apache.solr.client.solras.request
 			throw new Error("Not implemented");
 		}
 		
+		public function getPath():String 
+		{
+			return path;
+		}
 		
-		protected function send(response:SolrResponse, body:Object):SolrResponse 
+		
+		protected function send(response:SolrResponse, body:Object=""):SolrResponse 
 		{
 			response.elapsedTime = getTimer();
 			operation.resultFormat = HTTPService.RESULT_FORMAT_XML;
 			operation.addEventListener(ResultEvent.RESULT, response.resultHandler);
-			operation.addEventListener(FaultEvent.FAULT, traceFaultHandler);
+			operation.addEventListener(FaultEvent.FAULT, response.faultHandler);
 			operation.contentType = HTTPService.CONTENT_TYPE_XML;
-			operation.url += assembleParameters();
+			operation.url = baseUrl + getPath() + assembleParameters();
 			operation.send(body);
 			return response;	
 		}
 		
-		private function traceFaultHandler(e:FaultEvent):void 
-		{
-			trace(e);
-		}
 		
 		private function assembleParameters():String
 		{

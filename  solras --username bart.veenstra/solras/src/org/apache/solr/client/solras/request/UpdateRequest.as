@@ -17,18 +17,12 @@ package org.apache.solr.client.solras.request
 		private var toBeDeletedByQuery:Array; // of String
 		private var token:AsyncToken;
 		
-		public var solrParameters:SolrParams;
 		
 		public function UpdateRequest(solrClient:SolrClient)
 		{
 			super(solrClient, POST, "/update");
 		}
 		
-		
-		override public function getParams():SolrParams
-		{
-			return solrParameters;
-		}
 		
 		public function setAction(action:String, waitFlush:Boolean=false, waitSearcher:Boolean=false, maxSegments:Number=1):UpdateRequest
 		{
