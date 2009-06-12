@@ -44,22 +44,28 @@ package org.apache.solr.client.solras
 			return request.process() as UpdateResponse;
 		}
 		
-		public function commit(waitFlush:Boolean=false, waitOptimize:Boolean=false):UpdateResponse {
+		public function commit(waitFlush:Boolean=false, waitSearcher:Boolean=false):UpdateResponse {
 			var request:UpdateRequest = new UpdateRequest(this);
-			request.setAction(UpdateParams.COMMIT);
+			request.setAction(UpdateParams.COMMIT,waitFlush,waitSearcher);
 			return request.process() as UpdateResponse;
 		}
 		
-		public function optimize():UpdateResponse {
-			return null;
+		public function optimize(waitFlush:Boolean=false, waitOptimize:Boolean=false):UpdateResponse {
+			var request:UpdateRequest = new UpdateRequest(this);
+			request.setAction(UpdateParams.OPTIMIZE, waitFlush, waitOptimize);
+			return request.process() as UpdateResponse;
 		}
 		
-		public function updateById(id:String):UpdateResponse {
-			return null;
+		public function deleteById(id:String):UpdateResponse {
+			var request:UpdateRequest = new UpdateRequest(this);
+			request.deleteByID(id);
+			return request.process() as UpdateResponse;
 		}
 		
-		public function updateByQuery(query:String):UpdateResponse {
-			return null;
+		public function deleteByQuery(query:String):UpdateResponse {
+			var request:UpdateRequest = new UpdateRequest(this);
+			request.deleteByQuery(query);
+			return request.process() as UpdateResponse;
 		}
 		
 		public function query(params:SolrParams):QueryResponse {
