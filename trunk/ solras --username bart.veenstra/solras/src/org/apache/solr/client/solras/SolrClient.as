@@ -22,14 +22,7 @@ package org.apache.solr.client.solras
 			this.rootUrl = rootUrl;
 			solrService = new HTTPMultiService();
 			solrService.baseURL = rootUrl;
-						
 			solrService.useProxy = useProxy	;
-			solrService.addEventListener(FaultEvent.FAULT,traceFaultHandler);
-		}
-		
-		private function traceFaultHandler(e:FaultEvent):void 
-		{
-			trace(e);
 		}
 		
 		public function add(doc:SolrInputDocument):UpdateResponse {
