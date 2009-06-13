@@ -1,104 +1,202 @@
 package org.apache.solr.client.solras.response
 {
+	import flash.utils.Dictionary;
+	
+	import org.apache.solr.client.solras.SolrClient;
+	import org.apache.solr.common.SolrDocumentList;
+	import org.apache.solr.common.utils.NamedList;
 	import org.apache.solr.common.utils.NamedListEntry;
 
-	public class QueryResponse extends SolrResponseBase
+	public class QueryResponse extends SolrResponse
 	{
-		public var nvPairs:Array;
 		
+		// Direct pointers to known types
+		private var header:NamedList;
+		private var results:SolrDocumentList;
+		private var sortValues:NamedList;
+		private var facetInfo:NamedList;
+		private var debugInfo:NamedList;
+		private var highlighting:NamedList;
+		private var spellInfo:NamedList;
 		
-		public function QueryResponse()
+		// Facet stuff
+		private var facetQuery:Dictionary;
+		private var facetFields:Array;
+		private var limitingFacets:Array;
+		private var facetDates:Array;
+		
+		// Highlight Info
+		private var highLighting:Dictionary;
+		
+		// Spellcheck response
+		private var  spellResponse:SpellCheckResponse;
+		
+		// Debug Info
+		private var debugMap:Dictionary;
+		private var explainMap:Dictionary;
+		
+		// utility variable used for automatic binding -- it should not be serialized
+		private  var solrClient:SolrClient;
+
+		public function QueryResponse(response:NamedList=null,solrClient:SolrClient=null)
 		{
-			nvPairs = new Array();
+			super();
+			super.response = response;
+			this.solrClient = solrClient;
 		}
 		
-		public function getValueAt(index:int):Object
+		override public function set response(response:NamedList) : void
 		{
-			return getEntry(index).value;
-		}
-		
-		private function getEntry(index:int):NamedListEntry
-		{
-			return nvPairs[index] as NamedListEntry;
-		}
-		
-		public function add(name:String, value:Object):void
-		{
-			nvPairs.push(new NamedListEntry(name,value));
-		}
-		
-		public function setName(index:int, name:String):void 
-		{
-			getEntry(index).name = name;
-		}
-		
-		public function getName(index:int):String 
-		{
-			return getEntry(index).name;
-		}
-		
-		public function setValue(index:int, value:Object):void
-		{
-			getEntry(index).value = value;	
-		}
-		
-		public function remove(index:int):void
-		{
-			nvPairs.slice(index,1);
-		}
-		
-		public function indexOf(name:String, start:int=0): int
-		{
-			for(var i:int = start; i < nvPairs.length;i++)
+			super.response = response;
+			for each (var entry:NamedListEntry in response)
 			{
-				var n:String = getName(i);
-				if(n != null && n == name)
-					return i;
+				var name:String = entry.name;
+				if(name == "responseHeader")
+				{	
+					header = entry.value as NamedList;		
+				}
+				else if(name == "response")
+				{
+					results = entry.value as SolrDocumentList;
+				}
+				else if(name == "sort_values")
+				{
+					sortValues = entry.value as NamedList;
+				}
+				else if(name == "facet_counts")
+				{
+					facetInfo = entry.value as NamedList;
+					extractFacetInfo(facetInfo);
+				}
+				else if(name == "debug") 
+				{
+					debugInfo = entry.value as NamedList;
+					extractDebugInfo(debugInfo);
+				}
+				else if(name == "highlighting")
+				{
+					highlighting = entry.value as NamedList;
+					extractHighlightingInfo(highlighting);
+				}
+				else if(name == "spellcheck")
+				{
+					spellInfo = entry.value as NamedList;
+					extractSpellCheckInfo(spellInfo);
+				}
+			}				 	
+		}
+		
+		private function extractDebugInfo(debug:NamedList):void
+		{
+			debugMap = new Dictionary();
+			putNamedListToMap(debug,debugMap);
+			explainMap = new Dictionary();
+			var info:NamedList = debugInfo.getValue("explain") as NamedList;
+			if(info != null)
+			{
+				putNamedListToMap(info,explainMap);
 			}
-			return -1;
 		}
 		
-		public function getValue(name:String, start:int=0): Object
+		private function putNamedListToMap(nl:NamedList, map:Dictionary):void
 		{
-			for(var i:int = start; i < nvPairs.length;i++)
+			for each (var entry:NamedListEntry in nl.entries)
 			{
-				var n:NamedListEntry = getEntry(i);
-				if(n != null && n.name == name)
-					return n.value;
+				map[entry.name] = entry.value;
+			}
+		}
+		
+		private function extractHighlightingInfo(info:NamedList):void
+		{
+			highLighting = new Dictionary();
+			for each (var entry:NamedListEntry in info.entries)
+			{
+				highlighting[entry.name] = new Dictionary();
+				var fnl = entry.value as NamedList;
+				putNamedListToMap(fnl,highlighting[entry.name] as Dictionary);
+			}
+		}
+		
+		private function extractFacetInfo(info:NamedList):void
+		{
+			facetQuery = new Dictionary();
+			var fq:NamedList = info.getValue("facet_queries") as NamedList;
+			putNamedListToMap(fq,facetQuery);
+			
+			var ff:NamedList = info.getValue("facet_fields") as NamedList;
+			if(ff!=null)
+			{
+				facetFields = new Array();
+				limitingFacets = new Array();
+				
+				var minSize:Number = results.numFound;
+				for each (var facet:NamedListEntry in ff)
+				{
+					var f:FacetField = new FacetField(facet.name);
+					for each (var entry:NamedListEntry in facet.value as NamedList)
+						f.add(facet.name, facet.value as Number);
+					facetFields.push(f);
+					
+					var nl:FacetField = f.getLimitingFields(minSize);
+					if(nl.getValueCount() > 0)
+						limitingFacets.push(nl);
+				}
+			}
+			
+			var df:NamedList = info.getValue("facet_dates") as NamedList;
+			if(df!=null)
+			{
+				facetDates = new Array();
+				for each (var dateFacet:NamedListEntry in df)
+				{
+					var values:NamedList = dateFacet.value as NamedList;
+					var gap:String = values.getValue("gap") as String;
+					var end:Date = values.getValue("end") as Date;
+				
+					var dateField:FacetField = new FacetField(dateFacet.name, gap,end);
+					for each (var dateEntry:NamedListEntry in dateFacet.value as NamedList)
+					{
+						if(dateEntry.value is Number)
+							dateField.add(dateEntry.name, dateEntry.value as Number);
+					}
+					facetDates.push(dateField);
+				}
+			}
+			
+		}
+		
+		private function removeFacets():void 
+		{
+			facetFields = new Array();
+		}
+		
+		private function extractSpellCheckInfo(info:NamedList):void
+		{
+			spellResponse = new SpellCheckResponse(info);
+		}
+		
+		private function getFacetField(name:String):FacetField
+		{
+			if(facetFields == null)
+				return null;
+			for each (var f:FacetField in  facetFields)
+			{	
+				if(f.name == name)
+					return f;
 			}
 			return null;
 		}
 		
-		public function getAllValues(name:String): Object
+		private function getFacetDate(name:String):FacetField
 		{
-			var result:Array = new Array();
-			for(var i:int = 0; i < nvPairs.length;i++)
-			{
-				var n:NamedListEntry = getEntry(i);
-				if(n != null && n.name == name)
-					result.push(n.value);
+			if(facetDates == null)
+				return null;
+			for each (var f:FacetField in facetDates)
+			{	
+				if(f.name == name)
+					return f;
 			}
-			return result;
+			return null;
 		}
-		
-		public function toString():String 
-		{
-			var s:String = "{";
-			for(var i:int = 0; i < nvPairs.length;i++)
-			{
-				if(i != 0)
-					s +=",";
-				var n:NamedListEntry = getEntry(i);
-				s += n.name + "=" + n.value;
-			}
-			s += "}";
-			return s;				
-		}
-		
-		public function get entries():Array
-		{
-			return entries;
-		}
-			 
 	}
 }
