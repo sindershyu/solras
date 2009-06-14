@@ -3,7 +3,8 @@ package org.apache.solr.client.solras.request
 	import mx.rpc.AsyncToken;
 	
 	import org.apache.solr.client.solras.SolrClient;
-	import org.apache.solr.client.solras.response.SolrResponse;
+	import org.apache.solr.client.solras.SolrRequest;
+	import org.apache.solr.client.solras.SolrResponse;
 	import org.apache.solr.client.solras.response.UpdateResponse;
 	import org.apache.solr.common.SolrInputDocument;
 	import org.apache.solr.common.params.SolrParams;
@@ -30,14 +31,14 @@ package org.apache.solr.client.solras.request
 				solrParameters = new SolrParams();
 			if(action == UpdateParams.OPTIMIZE)
 			{
-				solrParameters.setParam(UpdateParams.OPTIMIZE,true);
-				solrParameters.setParam(UpdateParams.MAX_OPTIMIZE_SEGMENTS,maxSegments);
+				solrParameters.setParamValue(UpdateParams.OPTIMIZE,"true");
+				solrParameters.setParamValue(UpdateParams.MAX_OPTIMIZE_SEGMENTS,maxSegments.toString());
 			}
 			if(action == UpdateParams.COMMIT)
-				solrParameters.setParam(UpdateParams.COMMIT, true);
+				solrParameters.setParamValue(UpdateParams.COMMIT, "true");
 			
-			solrParameters.setParam(UpdateParams.WAIT_FLUSH, waitFlush);
-			solrParameters.setParam(UpdateParams.WAIT_SEARCHER, waitSearcher);
+			solrParameters.setParamValue(UpdateParams.WAIT_FLUSH, waitFlush.toString());
+			solrParameters.setParamValue(UpdateParams.WAIT_SEARCHER, waitSearcher.toString());
 			
 			return this;
 		}

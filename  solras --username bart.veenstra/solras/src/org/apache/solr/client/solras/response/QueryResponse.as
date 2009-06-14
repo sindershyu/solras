@@ -6,6 +6,7 @@ package org.apache.solr.client.solras.response
 	import org.apache.solr.common.SolrDocumentList;
 	import org.apache.solr.common.utils.NamedList;
 	import org.apache.solr.common.utils.NamedListEntry;
+	import org.apache.solr.client.solras.SolrResponse;
 
 	public class QueryResponse extends SolrResponse
 	{
@@ -112,7 +113,7 @@ package org.apache.solr.client.solras.response
 			for each (var entry:NamedListEntry in info.entries)
 			{
 				highlighting[entry.name] = new Dictionary();
-				var fnl = entry.value as NamedList;
+				var fnl:NamedList = entry.value as NamedList;
 				putNamedListToMap(fnl,highlighting[entry.name] as Dictionary);
 			}
 		}

@@ -2,63 +2,108 @@ package org.apache.solr.common.params
 {
 	import flash.utils.Dictionary;
 
-	public class SolrParams implements ISolrParams
+	public class SolrParams
 	{
-		public var params:Dictionary = new Dictionary();
+		private var params:Dictionary = new Dictionary();
+		private var paramIndex:Array = new Array();
 		
-		public function getParam(param:String):String 
+		public function getParam(name:String, def:String=null):String 
 		{
-			return params[param] as String;
+			var value:Array = params[name] as Array;
+			if(value == null)
+				return def;
+			return value[0];
 		}
 		
-		public function setParam(param:String, value:Object):void
+		public function setParam(name:String, value:Array):SolrParams
 		{ 
-			params[param] = value;	
+			params[name] = value;	
+			paramIndex.push(name);
+			return this;
 		}
 		
-		public function getBool(param:String):Boolean 
+		public function setParamValue(name:String, value:String):SolrParams
 		{
-			return new Boolean(getParam(param));
+			return setParam(name,[value]);
 		}
 		
-		public function getNumber(param:String):Number
+		public function addParam(name:String, value:String):SolrParams
 		{
-			return new Number(getParam(param));
+			var p:Array = params[name] as Array;
+			if(p == null)
+			{
+				setParam(name,[value]);
+				return this;
+			}
+			
+			p.push(value);
+			return this;
 		}
 		
-		public function getFieldBool(field:String, param:String):Boolean
+		public function add(solrParams:SolrParams):void
 		{
-			return new Boolean(getFieldParam(field,param));
+			for each (var name:String in solrParams.getParameterNames())
+			{
+				setParam(name,solrParams.getParams(name));
+			}
+			
 		}
 		
-		public function getFieldNumber(field:String, param:String):Number
+		public function remove(name:String):void
 		{
-			return new Number(getFieldParam(field,param));
+			params[name] = undefined;
+			paramIndex.slice(paramIndex.indexOf(name),1);
 		}
 		
-		public function getFieldParam(field:String, param:String):String
+		public function removeValue(name:String, value:String):void
 		{
-			return getParam(getfpname(field,param));
+			var values:Array = getParams(name);
+			if(values == null)
+				return;
+			values.slice(values.indexOf(value),1);
 		}
 		
-		public function getParams(param:String):Array
+		
+		public function getBool(name:String, def:Boolean=false):Boolean 
 		{
-			return params[param] as Array;
+			if(getParam(name) == null)
+				return def;
+			return new Boolean(getParam(name));
+		}
+		
+		public function getNumber(name:String):Number
+		{
+			return new Number(getParam(name));
+		}
+		
+		public function getFieldBool(field:String, name:String):Boolean
+		{
+			return new Boolean(getFieldParam(field,name));
+		}
+		
+		public function getFieldNumber(field:String, name:String):Number
+		{
+			return new Number(getFieldParam(field,name));
+		}
+		
+		public function getFieldParam(field:String, name:String):String
+		{
+			return getParam(getfpname(field,name));
+		}
+		
+		public function getParams(name:String):Array
+		{
+			return params[name] as Array;
 		}
 		
 		public function getParameterNames():Array
 		{
-			var result:Array = new Array();
-			for (var key:String in params)
-			{
-				result.push(key);	
-			}
-			return result; 
+			return paramIndex;
 		}
 		
-		protected function getfpname(field:String, param:String):String
+		protected function getfpname(field:String, name:String):String
 		{
-			return "f."+field+"."+param;
+			return "f."+field+"."+name;
 		}
 			
 	}

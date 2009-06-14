@@ -1,4 +1,4 @@
-package org.apache.solr.client.solras.response
+package org.apache.solr.client.solras
 {
 	import flash.utils.getTimer;
 	
