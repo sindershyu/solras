@@ -2,6 +2,7 @@ package org.apache.solr.client.solras.response
 {
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
+	import org.apache.solr.client.solras.SolrResponse;
 
 	public class UpdateResponse extends SolrResponse
 	{

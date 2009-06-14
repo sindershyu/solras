@@ -1,4 +1,4 @@
-package org.apache.solr.client.solras.request
+package org.apache.solr.client.solras
 {
 	import flash.utils.getTimer;
 	
@@ -7,13 +7,11 @@ package org.apache.solr.client.solras.request
 	import mx.rpc.http.HTTPService;
 	import mx.rpc.http.Operation;
 	
-	import org.apache.solr.client.solras.SolrClient;
-	import org.apache.solr.client.solras.response.SolrResponse;
 	import org.apache.solr.common.params.SolrParams;
 	
 	
 
-	public class SolrRequest implements ISolrRequest
+	public class SolrRequest
 	{
 		public static const POST:String = "POST";
 		public static const GET:String = "GET";
@@ -58,6 +56,7 @@ package org.apache.solr.client.solras.request
 			operation.contentType = HTTPService.CONTENT_TYPE_XML;
 			operation.url = baseUrl + getPath() + assembleParameters();
 			operation.send(body);
+			response.requestUrl = operation.url;
 			return response;	
 		}
 		
@@ -73,7 +72,7 @@ package org.apache.solr.client.solras.request
 			{
 				if(i == 0)
 					s+= "?";
-				var value:Object = p.params[names[i]]
+				var value:Object = p.getParam(names[i]);
 				s += names[i] + "=" + escape(value.toString());
 				
 				if(i < names.length-1)

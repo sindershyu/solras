@@ -1,8 +1,8 @@
 package org.apache.solr.client.solras
 {
-	import mx.rpc.events.FaultEvent;
 	import mx.rpc.http.HTTPMultiService;
 	
+	import org.apache.solr.client.solras.request.QueryRequest;
 	import org.apache.solr.client.solras.request.UpdateRequest;
 	import org.apache.solr.client.solras.response.QueryResponse;
 	import org.apache.solr.client.solras.response.UpdateResponse;
@@ -62,7 +62,8 @@ package org.apache.solr.client.solras
 		}
 		
 		public function query(params:SolrParams):QueryResponse {
-			return null;	
+			var request:QueryRequest = new QueryRequest(this,params);
+			return request.process() as QueryResponse;
 		}
 		
 		
