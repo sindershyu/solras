@@ -13,6 +13,11 @@ package org.apache.solr.common.utils
 			this.value = value;
 		}
 		
+		public function valueAsString():String
+		{
+			return value != null ? value.toString() : null;
+		}
+		
 		public function clone():NamedListEntry
 		{
 			return ObjectUtil.copy(this) as NamedListEntry;		
