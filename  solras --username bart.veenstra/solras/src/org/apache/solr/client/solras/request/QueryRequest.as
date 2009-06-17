@@ -12,6 +12,7 @@ package org.apache.solr.client.solras.request
 		public function QueryRequest(client:SolrClient,params:SolrParams)
 		{
 			super(client,SolrRequest.GET);
+			this.solrParameters = params; 
 		}
 		
 		override public function getPath():String
