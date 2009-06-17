@@ -24,7 +24,7 @@ package org.apache.solr.common
 			fields = new Dictionary();
 		}
 		
-		public function removeFields(name:String)
+		public function removeFields(name:String):void
 		{
 			fields[name] = undefined;
 		}
