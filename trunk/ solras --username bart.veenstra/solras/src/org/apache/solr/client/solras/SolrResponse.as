@@ -1,10 +1,12 @@
 package org.apache.solr.client.solras
 {
 	import flash.utils.getTimer;
+	import flash.xml.XMLNode;
 	
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	
+	import org.apache.solr.client.solras.response.ResponseProcessor;
 	import org.apache.solr.common.utils.NamedList;
 
 	public class SolrResponse
@@ -18,7 +20,11 @@ package org.apache.solr.client.solras
 		{
 			var diff:int = getTimer() - elapsedTime;
 			elapsedTime = diff;
-			trace("Request " + requestUrl + " executed in " + diff);
+			var xml:XML = new XML(resultEvent.result as XMLNode);
+			response = new NamedList();
+			ResponseProcessor.process(new XML(resultEvent.result as XMLNode),response);
+//			trace("Request " + requestUrl + " executed in " + diff);
+//			trace("Request Result: " +  new XML(resultEvent.result as XMLNode).toXMLString());
 		}
 		
 		public function faultHandler(fault:FaultEvent):void 
