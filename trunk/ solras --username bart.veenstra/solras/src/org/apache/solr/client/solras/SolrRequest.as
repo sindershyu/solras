@@ -36,7 +36,7 @@ package org.apache.solr.client.solras
 			operation.method = httpMethod;
 		}
 		
-		public function process():SolrResponse 
+		public function process(callback:Function=null):SolrResponse 
 		{
 			throw new Error("Not implemented");
 		}

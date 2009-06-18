@@ -82,7 +82,7 @@ package org.apache.solr.client.solras.request
 			return this;	
 		}
 		
-		override public function process():SolrResponse
+		override public function process(callback:Function=null):SolrResponse
 		{
 			var body:Object = "";
 			if(documentsToBeAdded!=null && documentsToBeAdded.length > 0)
@@ -113,7 +113,7 @@ package org.apache.solr.client.solras.request
 				body = deleteByQuery;
 			}
 			
-			return super.send(new UpdateResponse(),body);
+			return super.send(new UpdateResponse(callback),body);
 		}
 	}
 }

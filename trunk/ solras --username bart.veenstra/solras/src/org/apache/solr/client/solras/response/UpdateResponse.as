@@ -7,8 +7,9 @@ package org.apache.solr.client.solras.response
 	public class UpdateResponse extends SolrResponse
 	{
 		
-		public function UpdateResponse()
+		public function UpdateResponse(callback:Function=null)
 		{
+			super(callback); 
 		}
 		
 		override public function resultHandler(result:ResultEvent):void

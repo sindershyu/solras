@@ -11,6 +11,11 @@ package org.apache.solr.client.solras.response
 		public var indexInfo:NamedList;
 		public var fieldInfo:Dictionary;
 		public var fieldInfoType:Dictionary;
+		
+		public function LukeResponse(callback:Function=null)
+		{
+			super(callback);
+		}
 
 		override public function set response(resp:NamedList) : void
 		{

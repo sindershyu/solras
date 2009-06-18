@@ -61,9 +61,9 @@ package org.apache.solr.client.solras
 			return request.process() as UpdateResponse;
 		}
 		
-		public function query(params:SolrParams):QueryResponse {
+		public function query(params:SolrParams,callback:Function=null):QueryResponse {
 			var request:QueryRequest = new QueryRequest(this,params);
-			return request.process() as QueryResponse;
+			return request.process(callback) as QueryResponse;
 		}
 		
 		

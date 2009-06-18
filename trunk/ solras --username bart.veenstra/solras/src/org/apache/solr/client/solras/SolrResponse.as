@@ -3,6 +3,8 @@ package org.apache.solr.client.solras
 	import flash.utils.getTimer;
 	import flash.xml.XMLNode;
 	
+	import mx.logging.ILogger;
+	import mx.logging.Log;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	
@@ -13,24 +15,36 @@ package org.apache.solr.client.solras
 	{
 		public var elapsedTime:Number;
 		private var _response:NamedList;
-		
+		private var logger:ILogger = Log.getLogger("org.apache.solr.client.solras.SolrResponse");
 		public var requestUrl:String;
+		private var callback:Function;
+		public var xml:XML;
+		
+		public function SolrResponse(callback:Function=null)
+		{
+			this.callback = callback;
+		}
   		
 		public function resultHandler(resultEvent:ResultEvent):void
 		{
+			 
 			var diff:int = getTimer() - elapsedTime;
 			elapsedTime = diff;
 			var xml:XML = new XML(resultEvent.result as XMLNode);
-			response = new NamedList();
-			ResponseProcessor.process(new XML(resultEvent.result as XMLNode),response);
-//			trace("Request " + requestUrl + " executed in " + diff);
-//			trace("Request Result: " +  new XML(resultEvent.result as XMLNode).toXMLString());
+			this.xml = xml;
+			var result:NamedList = new NamedList();
+			ResponseProcessor.process(new XML(resultEvent.result as XMLNode),result);
+			response = result;
+			if(callback!=null);
+				callback.call(null,this);
+			logger.info("Request " + requestUrl + " executed in " + diff);
+			logger.info("Request Result: " +  new XML(resultEvent.result as XMLNode).toXMLString());
 		}
 		
 		public function faultHandler(fault:FaultEvent):void 
 		{
-			trace("Error executing Solr Request: [" + fault.fault.faultCode + "]" + fault.fault.faultString);
-			trace("Detail: " + fault.fault.faultDetail);
+			logger.info("Error executing Solr Request: [" + fault.fault.faultCode + "]" + fault.fault.faultString);
+			logger.info("Detail: " + fault.fault.faultDetail);
 		}
 		
 		public function set response(result:NamedList):void{
