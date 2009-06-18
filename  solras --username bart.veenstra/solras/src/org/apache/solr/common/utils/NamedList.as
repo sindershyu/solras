@@ -94,7 +94,7 @@ package org.apache.solr.common.utils
 		
 		public function get entries():Array
 		{
-			return entries;
+			return nvPairs;
 		}
 			 
 	}

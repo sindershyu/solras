@@ -9,6 +9,8 @@ package org.apache.solr.client.solras.request
 
 	public class QueryRequest extends SolrRequest
 	{
+		
+		
 		public function QueryRequest(client:SolrClient,params:SolrParams)
 		{
 			super(client,SolrRequest.GET);
@@ -25,9 +27,9 @@ package org.apache.solr.client.solras.request
 			return "/select";
 		}
 		
-		override public function process():SolrResponse
+		override public function process(callback:Function=null):SolrResponse
 		{
-			return super.send(new QueryResponse());
+			return super.send(new QueryResponse(null,null,callback));
 		}
 		
 	}

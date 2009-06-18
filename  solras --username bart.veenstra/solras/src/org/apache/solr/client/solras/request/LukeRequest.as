@@ -42,9 +42,9 @@ package org.apache.solr.client.solras.request
 			return params;
 		}
 		
-		override public function process():SolrResponse
+		override public function process(callback:Function=null):SolrResponse
 		{
-			return super.send(new LukeResponse());
+			return super.send(new LukeResponse(callback));
 		}
 	}
 }

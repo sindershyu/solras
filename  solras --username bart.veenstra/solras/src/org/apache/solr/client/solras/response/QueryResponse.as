@@ -39,9 +39,9 @@ package org.apache.solr.client.solras.response
 		// utility variable used for automatic binding -- it should not be serialized
 		private  var solrClient:SolrClient;
 
-		public function QueryResponse(response:NamedList=null,solrClient:SolrClient=null)
+		public function QueryResponse(response:NamedList=null,solrClient:SolrClient=null,callback:Function=null)
 		{
-			super();
+			super(callback);
 			super.response = response;
 			this.solrClient = solrClient;
 		}
@@ -49,7 +49,7 @@ package org.apache.solr.client.solras.response
 		override public function set response(response:NamedList) : void
 		{
 			super.response = response;
-			for each (var entry:NamedListEntry in response)
+			for each (var entry:NamedListEntry in super.response.entries)
 			{
 				var name:String = entry.name;
 				if(name == "responseHeader")
