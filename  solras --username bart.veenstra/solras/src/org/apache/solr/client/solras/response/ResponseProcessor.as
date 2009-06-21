@@ -3,7 +3,6 @@ package org.apache.solr.client.solras.response
 	
 	import org.apache.solr.common.SolrDocument;
 	import org.apache.solr.common.SolrDocumentList;
-	import org.apache.solr.common.SolrInputDocument;
 	import org.apache.solr.common.utils.NamedList;
 
 	public class ResponseProcessor
@@ -37,6 +36,7 @@ package org.apache.solr.client.solras.response
 		private static function processNamedList(xml:XML):NamedList 
 		{
 			var namedList:NamedList = new NamedList();
+			namedList.name = xml.@name;
 			for each (var child:XML in xml.children())
 			{
 				var type:String = child.name();
@@ -50,7 +50,6 @@ package org.apache.solr.client.solras.response
 		
 		private static function parseLeaf(type:String,value:Object):Object
 		{
-			trace(type);
 			var result:Object = null;
 			switch(type)
 			{
@@ -98,7 +97,7 @@ package org.apache.solr.client.solras.response
 			for each(var doc:XML in xml.doc)
 			{
 				var solrInputDocument:SolrDocument = processDoc(doc);
-				list.push(solrInputDocument);
+				list.add(solrInputDocument);
 			}			
 			return list;
 		}
@@ -111,7 +110,7 @@ package org.apache.solr.client.solras.response
 				var type:String = child.name();
 				var result:Object = parseLeaf(type,child.valueOf());
 				var name:String = child.@name;
-				doc.addField(name,result);
+				doc.add(name,result);
 			}
 			
 			return doc;

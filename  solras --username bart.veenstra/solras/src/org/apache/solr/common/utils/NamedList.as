@@ -2,11 +2,17 @@ package org.apache.solr.common.utils
 {
 	public class NamedList
 	{
-		public var nvPairs:Array;
+		private var _children:Array;
+		public var name:String;
 
 		public function NamedList()
 		{
-			nvPairs = new Array();
+			_children = new Array();
+		}
+		
+		public function clear():void 
+		{
+			_children = new Array()
 		}
 		
 		public function getValueAt(index:int):Object
@@ -16,12 +22,12 @@ package org.apache.solr.common.utils
 		
 		private function getEntry(index:int):NamedListEntry
 		{
-			return nvPairs[index] as NamedListEntry;
+			return _children[index] as NamedListEntry;
 		}
 		
 		public function add(name:String, value:Object):void
 		{
-			nvPairs.push(new NamedListEntry(name,value));
+			_children.push(new NamedListEntry(name,value));
 		}
 		
 		public function setName(index:int, name:String):void 
@@ -41,12 +47,12 @@ package org.apache.solr.common.utils
 		
 		public function remove(index:int):void
 		{
-			nvPairs.slice(index,1);
+			_children.slice(index,1);
 		}
 		
 		public function indexOf(name:String, start:int=0): int
 		{
-			for(var i:int = start; i < nvPairs.length;i++)
+			for(var i:int = start; i < _children.length;i++)
 			{
 				var n:String = getName(i);
 				if(n != null && n == name)
@@ -57,7 +63,7 @@ package org.apache.solr.common.utils
 		
 		public function getValue(name:String, start:int=0): Object
 		{
-			for(var i:int = start; i < nvPairs.length;i++)
+			for(var i:int = start; i < _children.length;i++)
 			{
 				var n:NamedListEntry = getEntry(i);
 				if(n != null && n.name == name)
@@ -69,7 +75,7 @@ package org.apache.solr.common.utils
 		public function getAllValues(name:String): Object
 		{
 			var result:Array = new Array();
-			for(var i:int = 0; i < nvPairs.length;i++)
+			for(var i:int = 0; i < _children.length;i++)
 			{
 				var n:NamedListEntry = getEntry(i);
 				if(n != null && n.name == name)
@@ -81,7 +87,7 @@ package org.apache.solr.common.utils
 		public function toString():String 
 		{
 			var s:String = "{";
-			for(var i:int = 0; i < nvPairs.length;i++)
+			for(var i:int = 0; i < _children.length;i++)
 			{
 				if(i != 0)
 					s +=",";
@@ -92,9 +98,14 @@ package org.apache.solr.common.utils
 			return s;				
 		}
 		
-		public function get entries():Array
+		public function get children():Array
 		{
-			return nvPairs;
+			return _children;
+		}
+		
+		public function get hasChildren():Boolean
+		{
+			return children.length > 0;
 		}
 			 
 	}

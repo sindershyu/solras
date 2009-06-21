@@ -1,11 +1,11 @@
 package org.apache.solr.client.solras.request
 {
 	import org.apache.solr.client.solras.SolrClient;
-	import org.apache.solr.client.solras.response.QueryResponse;
+	import org.apache.solr.client.solras.SolrRequest;
 	import org.apache.solr.client.solras.SolrResponse;
+	import org.apache.solr.client.solras.response.QueryResponse;
 	import org.apache.solr.common.params.CommonParams;
 	import org.apache.solr.common.params.SolrParams;
-	import org.apache.solr.client.solras.SolrRequest;
 
 	public class QueryRequest extends SolrRequest
 	{
@@ -29,7 +29,8 @@ package org.apache.solr.client.solras.request
 		
 		override public function process(callback:Function=null):SolrResponse
 		{
-			return super.send(new QueryResponse(null,null,callback));
+			var qr:QueryResponse = new QueryResponse(null,super.solrClient,callback);
+			return super.send(qr);
 		}
 		
 	}

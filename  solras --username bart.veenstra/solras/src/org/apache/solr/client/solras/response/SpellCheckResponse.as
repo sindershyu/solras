@@ -20,7 +20,7 @@ package org.apache.solr.client.solras.response
 				correctlySpelled = true;
 				return;
 			}
-			for each (var entry:NamedListEntry in sugg.entries)
+			for each (var entry:NamedListEntry in sugg.children)
 			{
 				var name:String = entry.name;
 				if(name == "correctlySpelled") 
