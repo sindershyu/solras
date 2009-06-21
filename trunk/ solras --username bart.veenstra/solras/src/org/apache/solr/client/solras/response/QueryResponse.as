@@ -3,38 +3,39 @@ package org.apache.solr.client.solras.response
 	import flash.utils.Dictionary;
 	
 	import org.apache.solr.client.solras.SolrClient;
+	import org.apache.solr.client.solras.SolrResponse;
 	import org.apache.solr.common.SolrDocumentList;
+	import org.apache.solr.common.params.SolrParams;
 	import org.apache.solr.common.utils.NamedList;
 	import org.apache.solr.common.utils.NamedListEntry;
-	import org.apache.solr.client.solras.SolrResponse;
 
 	public class QueryResponse extends SolrResponse
 	{
 		
 		// Direct pointers to known types
-		private var header:NamedList;
-		private var results:SolrDocumentList;
-		private var sortValues:NamedList;
-		private var facetInfo:NamedList;
-		private var debugInfo:NamedList;
-		private var highlighting:NamedList;
-		private var spellInfo:NamedList;
+		[Bindable] public var header:NamedList;
+		[Bindable] public var results:SolrDocumentList;
+		[Bindable] public var sortValues:NamedList;
+		[Bindable] public var facetInfo:NamedList;
+		[Bindable] public var debugInfo:NamedList;
+		[Bindable] public var highlighting:NamedList;
+		[Bindable] public var spellInfo:NamedList;
 		
 		// Facet stuff
-		private var facetQuery:Dictionary;
-		private var facetFields:Array;
-		private var limitingFacets:Array;
-		private var facetDates:Array;
+		[Bindable] public var facetQuery:Dictionary;
+		[Bindable] public var facetFields:Array;
+		[Bindable] public var limitingFacets:Array;
+		[Bindable] public var facetDates:Array;
 		
 		// Highlight Info
-		private var highLighting:Dictionary;
+		[Bindable] public var highLighting:Dictionary;
 		
 		// Spellcheck response
-		private var  spellResponse:SpellCheckResponse;
+		[Bindable] public var  spellResponse:SpellCheckResponse;
 		
 		// Debug Info
-		private var debugMap:Dictionary;
-		private var explainMap:Dictionary;
+		[Bindable] public var debugMap:Dictionary;
+		[Bindable] public var explainMap:Dictionary;
 		
 		// utility variable used for automatic binding -- it should not be serialized
 		private  var solrClient:SolrClient;
@@ -46,10 +47,26 @@ package org.apache.solr.client.solras.response
 			this.solrClient = solrClient;
 		}
 		
+		public function updateResults(start:Number):void
+		{
+			var params:NamedList = header.getValue("params") as NamedList;
+			var sIndex:Number = params.indexOf("start") as Number;
+			if(sIndex == -1)
+				params.add("start", start);
+			else
+				params.setValue(sIndex,start);
+			solrClient.query(SolrParams.toSolrParams(params),updateHandler);
+		}
+	
+		public function updateHandler(response:QueryResponse):void 
+		{
+			this.response = response.response;
+		}		
+
 		override public function set response(response:NamedList) : void
 		{
 			super.response = response;
-			for each (var entry:NamedListEntry in super.response.entries)
+			for each (var entry:NamedListEntry in super.response.children)
 			{
 				var name:String = entry.name;
 				if(name == "responseHeader")
@@ -101,7 +118,7 @@ package org.apache.solr.client.solras.response
 		
 		private function putNamedListToMap(nl:NamedList, map:Dictionary):void
 		{
-			for each (var entry:NamedListEntry in nl.entries)
+			for each (var entry:NamedListEntry in nl.children)
 			{
 				map[entry.name] = entry.value;
 			}
@@ -110,7 +127,7 @@ package org.apache.solr.client.solras.response
 		private function extractHighlightingInfo(info:NamedList):void
 		{
 			highLighting = new Dictionary();
-			for each (var entry:NamedListEntry in info.entries)
+			for each (var entry:NamedListEntry in info.children)
 			{
 				highlighting[entry.name] = new Dictionary();
 				var fnl:NamedList = entry.value as NamedList;

@@ -33,6 +33,7 @@ package org.apache.solr.client.solras
 			var xml:XML = new XML(resultEvent.result as XMLNode);
 			this.xml = xml;
 			var result:NamedList = new NamedList();
+			result.name = "Solr Server Response";
 			ResponseProcessor.process(new XML(resultEvent.result as XMLNode),result);
 			response = result;
 			if(callback!=null);

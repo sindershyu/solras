@@ -21,6 +21,7 @@ package org.apache.solr.client.solras
 		protected var baseUrl:String;
 		protected var operation:Operation;
 		public var solrParameters:SolrParams;
+		protected var solrClient:SolrClient;
 		
 		
 		public function getParams():SolrParams
@@ -30,6 +31,7 @@ package org.apache.solr.client.solras
 		
 		public function SolrRequest(client:SolrClient, httpMethod:String, path:String=null)
 		{
+			this.solrClient = client;
 			this.path = path;
 			this.baseUrl = client.solrService.baseURL;
 			operation = new Operation(client.solrService,"update");

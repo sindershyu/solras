@@ -1,6 +1,9 @@
 package org.apache.solr.common.params
 {
 	import flash.utils.Dictionary;
+	
+	import org.apache.solr.common.utils.NamedList;
+	import org.apache.solr.common.utils.NamedListEntry;
 
 	public class SolrParams
 	{
@@ -105,6 +108,29 @@ package org.apache.solr.common.params
 		{
 			return "f."+field+"."+name;
 		}
+		
+		public static function toSolrParams(nl:NamedList)
+		{
+			var p:SolrParams = new SolrParams();
+			for each (var entry:NamedListEntry in nl.children)
+			{
+				p.addParam(entry.name,entry.value.toString());
+			}
+			return p;
+		}	
+		
+		
+		/** Create SolrParams from NamedList. */
+		/*
+  		public static SolrParams toSolrParams(NamedList params) {
+    		// if no keys are repeated use the faster MapSolrParams
+    		HashMap<String,String> map = new HashMap<String,String>();
+    		for (int i=0; i<params.size(); i++) {
+      			String prev = map.put(params.getName(i), params.getVal(i).toString());
+      		if (prev!=null) return new MultiMapSolrParams(toMultiMap(params));
+    }
+    return new MapSolrParams(map);
+  }*/
 			
 	}
 }
