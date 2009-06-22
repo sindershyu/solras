@@ -36,7 +36,7 @@ package org.apache.solr.client.solras.request
 			if(fields != null && fields.length > 0)
 				params.addParam(CommonParams.FL, fields.toString());
 			if(numTerms >= 0)
-				params.addParam("numTerms", "numTerms+");
+				params.addParam("numTerms", numTerms.toString());
 			if(showSchema)
 				params.addParam("show", "schema");
 			return params;
