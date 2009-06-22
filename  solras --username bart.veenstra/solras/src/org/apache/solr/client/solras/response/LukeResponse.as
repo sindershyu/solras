@@ -12,6 +12,8 @@ package org.apache.solr.client.solras.response
 		public var fieldInfo:Dictionary;
 		public var fieldInfoType:Dictionary;
 		
+		public var indexedFields:Array; 
+
 		public function LukeResponse(callback:Function=null)
 		{
 			super(callback);
@@ -30,25 +32,30 @@ package org.apache.solr.client.solras.response
 			if(fields != null)
 			{
 				fieldInfo = new Dictionary();
-				for each (var entry:NamedListEntry in fields)
+				indexedFields = new Array();
+				for each (var entry:NamedListEntry in fields.children)
 				{
 					var f:FieldInfo = new FieldInfo(entry.name);
 					f.read(entry.value as NamedList);
 					fieldInfo[entry.name] = f;
+					var flag:FieldFlag = FieldFlag(FieldInfo.FLAGS["I"]);
+					if(f.flags.indexOf(flag) != -1)
+						indexedFields.push(f);
+					
 				}				
 			}
 			
 			if(schema != null)
 			{
+				fieldInfoType = new Dictionary();
 				var fieldTypes:NamedList = schema.getValue("types") as NamedList;
-				for each (var e:NamedListEntry in fieldTypes)
+				for each (var e:NamedListEntry in fieldTypes.children)
 				{
 					var ft:FieldTypeInfo = new FieldTypeInfo(e.name);
 					ft.read(e.value as NamedList);
 					fieldInfoType[e.name] = ft;
 				}		
 			}
-				
 		}
 	}
 }

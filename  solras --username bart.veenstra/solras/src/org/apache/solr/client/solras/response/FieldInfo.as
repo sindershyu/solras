@@ -5,6 +5,7 @@ package org.apache.solr.client.solras.response
 	import org.apache.solr.common.utils.NamedList;
 	import org.apache.solr.common.utils.NamedListEntry;
 
+	[Bindable]
 	public class FieldInfo
 	{
 		public var name:String;
@@ -21,19 +22,19 @@ package org.apache.solr.client.solras.response
 		public static function fillFlags():Dictionary
 		{
 			var d:Dictionary = new Dictionary();
-			d['I']= "Indexed";
-			d['T'] = "Tokenized"; 
-			d['S'] = "Stored";
-			d['M'] = "Multivalued";
-			d['V'] = "TermVector Stored"; 
-			d['o'] = "Store Offset With TermVector";
-			d['p'] = "Store Position With TermVector";
-			d['O'] = "Omit Norms";
-			d['L'] = "Lazy";
-			d['B'] = "Binary"; 
-			d['C'] = "Compressed";
-			d['f'] = "Sort Missing First"; 
-			d['l'] = "Sort Missing Last";
+			d['I']=  new FieldFlag("I","Indexed");
+			d['T'] = new FieldFlag("T","Tokenized"); 
+			d['S'] = new FieldFlag("S","Stored");
+			d['M'] = new FieldFlag("M","Multivalued");
+			d['V'] = new FieldFlag("V","TermVector Stored"); 
+			d['o'] = new FieldFlag("o","Store Offset With TermVector");
+			d['p'] = new FieldFlag("p","Store Position With TermVector");
+			d['O'] = new FieldFlag("O","Omit Norms");
+			d['L'] = new FieldFlag("L","Lazy");
+			d['B'] = new FieldFlag("B","Binary"); 
+			d['C'] = new FieldFlag("C","Compressed");
+			d['f'] = new FieldFlag("f","Sort Missing First"); 
+			d['l'] = new FieldFlag("l","Sort Missing Last");
 			return d; 
 		}
 		
@@ -44,7 +45,7 @@ package org.apache.solr.client.solras.response
 		
 		public function read(nl:NamedList):void 
 		{
-			for each (var entry:NamedListEntry in nl)
+			for each (var entry:NamedListEntry in nl.children)
 			{
 				switch(entry.name)
 				{
@@ -65,11 +66,14 @@ package org.apache.solr.client.solras.response
 			for(var i:int = 0; i < flagStr.length; i++)
 			{
 				var flag:String = flagStr.charAt(i);
-				var fieldFlag:FieldFlag = new FieldFlag(flag,FLAGS[flag]);
-				result.push(fieldFlag);
+				if(FLAGS[flag]!=null)
+				{
+					var fieldFlag:FieldFlag = FieldFlag(FLAGS[flag]);
+					result.push(fieldFlag);
+				}
 			}
 			return result;
 		}
-		
+				
 	}
 }

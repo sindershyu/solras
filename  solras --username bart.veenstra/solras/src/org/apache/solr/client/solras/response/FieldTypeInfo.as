@@ -19,7 +19,7 @@ package org.apache.solr.client.solras.response
 		
 		public function read(nl:NamedList):void
 		{
-			for each (var entry:NamedListEntry in nl)
+			for each (var entry:NamedListEntry in nl.children)
 			{
 				switch(entry.name)
 				{

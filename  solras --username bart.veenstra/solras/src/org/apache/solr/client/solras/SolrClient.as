@@ -25,51 +25,46 @@ package org.apache.solr.client.solras
 			solrService.useProxy = useProxy	;
 		}
 		
-		public function add(doc:SolrInputDocument):UpdateResponse {
+		public function add(doc:SolrInputDocument,callback:Function=null):UpdateResponse {
 			var request:UpdateRequest = new UpdateRequest(this);
 			request.add(doc);
-			return request.process() as UpdateResponse;
+			return request.process(callback) as UpdateResponse;
 		}
 		
-		public function addCollection(docs:Array):UpdateResponse {
+		public function addCollection(docs:Array,callback:Function=null):UpdateResponse {
 			var request:UpdateRequest = new UpdateRequest(this);
 			request.addCollection(docs);
-			return request.process() as UpdateResponse;
+			return request.process(callback) as UpdateResponse;
 		}
 		
-		public function commit(waitFlush:Boolean=false, waitSearcher:Boolean=false):UpdateResponse {
+		public function commit(callback:Function=null,waitFlush:Boolean=false, waitSearcher:Boolean=false):UpdateResponse {
 			var request:UpdateRequest = new UpdateRequest(this);
 			request.setAction(UpdateParams.COMMIT,waitFlush,waitSearcher);
-			return request.process() as UpdateResponse;
+			return request.process(callback) as UpdateResponse;
 		}
 		
-		public function optimize(waitFlush:Boolean=false, waitOptimize:Boolean=false):UpdateResponse {
+		public function optimize(callback:Function=null,waitFlush:Boolean=false, waitOptimize:Boolean=false):UpdateResponse {
 			var request:UpdateRequest = new UpdateRequest(this);
 			request.setAction(UpdateParams.OPTIMIZE, waitFlush, waitOptimize);
-			return request.process() as UpdateResponse;
+			return request.process(callback) as UpdateResponse;
 		}
 		
-		public function deleteById(id:String):UpdateResponse {
+		public function deleteById(id:String,callback:Function=null):UpdateResponse {
 			var request:UpdateRequest = new UpdateRequest(this);
 			request.deleteByID(id);
-			return request.process() as UpdateResponse;
+			return request.process(callback) as UpdateResponse;
 		}
 		
-		public function deleteByQuery(query:String):UpdateResponse {
+		public function deleteByQuery(query:String,callback:Function=null):UpdateResponse {
 			var request:UpdateRequest = new UpdateRequest(this);
 			request.deleteByQuery(query);
-			return request.process() as UpdateResponse;
+			return request.process(callback) as UpdateResponse;
 		}
 		
 		public function query(params:SolrParams,callback:Function=null):QueryResponse {
 			var request:QueryRequest = new QueryRequest(this,params);
 			return request.process(callback) as QueryResponse;
 		}
-		
-//		public function request(solrRequest:SolrRequest, classback:Function):SolrResponse {
-//			
-//		}
-		
 		
 	}
 }
