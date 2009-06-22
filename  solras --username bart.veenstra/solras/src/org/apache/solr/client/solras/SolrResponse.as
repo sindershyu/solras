@@ -48,10 +48,12 @@ package org.apache.solr.client.solras
 			logger.info("Detail: " + fault.fault.faultDetail);
 		}
 		
+		
 		public function set response(result:NamedList):void{
 			_response = result;
 		}
 		
+		[Bindable]
 		public function get response():NamedList
 		{
 			return _response;

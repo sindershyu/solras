@@ -66,6 +66,10 @@ package org.apache.solr.client.solras
 			return request.process(callback) as QueryResponse;
 		}
 		
+//		public function request(solrRequest:SolrRequest, classback:Function):SolrResponse {
+//			
+//		}
+		
 		
 	}
 }

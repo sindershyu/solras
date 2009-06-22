@@ -47,6 +47,11 @@ package org.apache.solr.client.solras.response
 			this.solrClient = solrClient;
 		}
 		
+		public function loadFacets():void 
+		{
+			
+		}
+		
 		public function updateResults(start:Number):void
 		{
 			var params:NamedList = header.getValue("params") as NamedList;
