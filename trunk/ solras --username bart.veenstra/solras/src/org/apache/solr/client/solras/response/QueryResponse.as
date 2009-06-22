@@ -178,16 +178,17 @@ package org.apache.solr.client.solras.response
 				limitingFacets = new Array();
 				
 				var minSize:Number = results.numFound;
-				for each (var facet:NamedListEntry in ff)
+				for each (var facet:NamedListEntry in ff.children)
 				{
 					var f:FacetField = new FacetField(facet.name);
-					for each (var entry:NamedListEntry in facet.value as NamedList)
+					var nl:NamedList = facet.value as NamedList;
+					for each (var entry:NamedListEntry in nl.children)
 						f.add(facet.name, facet.value as Number);
 					facetFields.push(f);
 					
-					var nl:FacetField = f.getLimitingFields(minSize);
-					if(nl.getValueCount() > 0)
-						limitingFacets.push(nl);
+					var faf:FacetField = f.getLimitingFields(minSize);
+					if(faf.getValueCount() > 0)
+						limitingFacets.push(faf);
 				}
 			}
 			
@@ -195,14 +196,15 @@ package org.apache.solr.client.solras.response
 			if(df!=null)
 			{
 				facetDates = new Array();
-				for each (var dateFacet:NamedListEntry in df)
+				for each (var dateFacet:NamedListEntry in df.children)
 				{
 					var values:NamedList = dateFacet.value as NamedList;
 					var gap:String = values.getValue("gap") as String;
 					var end:Date = values.getValue("end") as Date;
 				
 					var dateField:FacetField = new FacetField(dateFacet.name, gap,end);
-					for each (var dateEntry:NamedListEntry in dateFacet.value as NamedList)
+					var nld:NamedList = dateFacet.value as NamedList;
+					for each (var dateEntry:NamedListEntry in nld.children )
 					{
 						if(dateEntry.value is Number)
 							dateField.add(dateEntry.name, dateEntry.value as Number);
