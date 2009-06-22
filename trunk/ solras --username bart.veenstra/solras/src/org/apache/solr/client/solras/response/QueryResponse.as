@@ -3,6 +3,7 @@ package org.apache.solr.client.solras.response
 	import flash.utils.Dictionary;
 	
 	import org.apache.solr.client.solras.SolrClient;
+	import org.apache.solr.client.solras.SolrQuery;
 	import org.apache.solr.client.solras.SolrResponse;
 	import org.apache.solr.common.SolrDocumentList;
 	import org.apache.solr.common.params.SolrParams;
@@ -39,6 +40,8 @@ package org.apache.solr.client.solras.response
 		
 		// utility variable used for automatic binding -- it should not be serialized
 		private  var solrClient:SolrClient;
+		
+		[Bindable] public var requestPending:Boolean = true;
 
 		public function QueryResponse(response:NamedList=null,solrClient:SolrClient=null,callback:Function=null)
 		{
@@ -54,6 +57,7 @@ package org.apache.solr.client.solras.response
 		
 		public function updateResults(start:Number):void
 		{
+			requestPending = true;
 			var params:NamedList = header.getValue("params") as NamedList;
 			var sIndex:Number = params.indexOf("start") as Number;
 			if(sIndex == -1)
@@ -61,6 +65,26 @@ package org.apache.solr.client.solras.response
 			else
 				params.setValue(sIndex,start);
 			solrClient.query(SolrParams.toSolrParams(params),updateHandler);
+		}
+		
+		public function applyFacet(f:FieldInfo):void 
+		{
+			requestPending = true;
+			var params:NamedList = header.getValue("params") as NamedList;
+			var q:SolrQuery = new SolrQuery();
+			q.add(SolrParams.toSolrParams(params));
+			q.addFacetField(f.name);
+			solrClient.query(q,updateHandler);
+		}
+		
+		public function removeFacet(f:FieldInfo):void 
+		{
+			requestPending = true;
+			var params:NamedList = header.getValue("params") as NamedList;
+			var q:SolrQuery = new SolrQuery();
+			q.add(SolrParams.toSolrParams(params));
+			q.removeFacetField(f.name);
+			solrClient.query(q,updateHandler);
 		}
 	
 		public function updateHandler(response:QueryResponse):void 
@@ -106,7 +130,8 @@ package org.apache.solr.client.solras.response
 					spellInfo = entry.value as NamedList;
 					extractSpellCheckInfo(spellInfo);
 				}
-			}				 	
+			}
+			requestPending = false;				 	
 		}
 		
 		private function extractDebugInfo(debug:NamedList):void
