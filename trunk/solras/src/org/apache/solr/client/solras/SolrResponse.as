@@ -13,12 +13,16 @@ package org.apache.solr.client.solras
 
 	public class SolrResponse
 	{
-		public var elapsedTime:Number;
-		private var _response:NamedList;
 		private var logger:ILogger = Log.getLogger("org.apache.solr.client.solras.SolrResponse");
-		public var requestUrl:String;
 		private var callback:Function;
-		public var xml:XML;
+
+		public 	var elapsedTime:Number;
+		public 	var response:NamedList;
+		public 	var requestUrl:String;
+		
+		
+		[Bindable] 
+		public var requestPending:Boolean = true;
 		
 		public function SolrResponse(callback:Function=null)
 		{
@@ -27,36 +31,29 @@ package org.apache.solr.client.solras
   		
 		public function resultHandler(resultEvent:ResultEvent):void
 		{
-			 
 			var diff:int = getTimer() - elapsedTime;
 			elapsedTime = diff;
-			var xml:XML = new XML(resultEvent.result as XMLNode);
-			this.xml = xml;
-			var result:NamedList = new NamedList();
-			result.name = "Solr Server Response";
-			ResponseProcessor.process(new XML(resultEvent.result as XMLNode),result);
-			response = result;
-			if(callback!=null);
-				callback.call(null,this);
+			response = new NamedList();
+			response.name = "Solr Server Response";
+			ResponseProcessor.process(new XML(resultEvent.result as XMLNode),response);
+			process(response);
 			logger.info("Request " + requestUrl + " executed in " + diff);
 			logger.info("Request Result: " +  new XML(resultEvent.result as XMLNode).toXMLString());
+			if(callback!=null);
+				callback.call(null,this);
+			
+			requestPending = false;	
+		}
+		
+		public function process(response:NamedList):void 
+		{
+			
 		}
 		
 		public function faultHandler(fault:FaultEvent):void 
 		{
 			logger.info("Error executing Solr Request: [" + fault.fault.faultCode + "]" + fault.fault.faultString);
 			logger.info("Detail: " + fault.fault.faultDetail);
-		}
-		
-		
-		public function set response(result:NamedList):void{
-			_response = result;
-		}
-		
-		[Bindable]
-		public function get response():NamedList
-		{
-			return _response;
 		}
 	}
 }
