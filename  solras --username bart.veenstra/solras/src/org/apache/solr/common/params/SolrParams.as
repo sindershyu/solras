@@ -109,7 +109,7 @@ package org.apache.solr.common.params
 			return "f."+field+"."+name;
 		}
 		
-		public static function toSolrParams(nl:NamedList)
+		public static function toSolrParams(nl:NamedList):SolrParams
 		{
 			var p:SolrParams = new SolrParams();
 			for each (var entry:NamedListEntry in nl.children)

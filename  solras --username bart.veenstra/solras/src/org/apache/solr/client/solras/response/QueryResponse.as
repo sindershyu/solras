@@ -183,7 +183,7 @@ package org.apache.solr.client.solras.response
 					var f:FacetField = new FacetField(facet.name);
 					var nl:NamedList = facet.value as NamedList;
 					for each (var entry:NamedListEntry in nl.children)
-						f.add(facet.name, facet.value as Number);
+						f.add(facet.name, new Number(facet.value));
 					facetFields.push(f);
 					
 					var faf:FacetField = f.getLimitingFields(minSize);
@@ -206,8 +206,7 @@ package org.apache.solr.client.solras.response
 					var nld:NamedList = dateFacet.value as NamedList;
 					for each (var dateEntry:NamedListEntry in nld.children )
 					{
-						if(dateEntry.value is Number)
-							dateField.add(dateEntry.name, dateEntry.value as Number);
+						dateField.add(dateEntry.name, new Number(dateEntry.value));
 					}
 					facetDates.push(dateField);
 				}
