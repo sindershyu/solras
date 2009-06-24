@@ -6,6 +6,7 @@ package org.apache.solr.client.solras.response
 	import org.apache.solr.common.utils.NamedList;
 	import org.apache.solr.common.utils.NamedListEntry;
 
+	
 	public class LukeResponse extends SolrResponse
 	{
 		public var indexInfo:NamedList;
@@ -19,9 +20,8 @@ package org.apache.solr.client.solras.response
 			super(callback);
 		}
 
-		override public function set response(resp:NamedList) : void
+		override public function process(resp:NamedList) : void
 		{
-			super.response = resp;
 			indexInfo = super.response.getValue("index") as NamedList;
 			var schema:NamedList = super.response.getValue("schema") as NamedList;
 			var fields:NamedList = super.response.getValue("fields") as NamedList;

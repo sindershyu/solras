@@ -41,8 +41,6 @@ package org.apache.solr.client.solras.response
 		// utility variable used for automatic binding -- it should not be serialized
 		private  var solrClient:SolrClient;
 		
-		[Bindable] public var requestPending:Boolean = true;
-
 		public function QueryResponse(response:NamedList=null,solrClient:SolrClient=null,callback:Function=null)
 		{
 			super(callback);
@@ -92,9 +90,8 @@ package org.apache.solr.client.solras.response
 			this.response = response.response;
 		}		
 
-		override public function set response(response:NamedList) : void
+		override public function process(response:NamedList) : void
 		{
-			super.response = response;
 			for each (var entry:NamedListEntry in super.response.children)
 			{
 				var name:String = entry.name;
@@ -131,7 +128,6 @@ package org.apache.solr.client.solras.response
 					extractSpellCheckInfo(spellInfo);
 				}
 			}
-			requestPending = false;				 	
 		}
 		
 		private function extractDebugInfo(debug:NamedList):void
